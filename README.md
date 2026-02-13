@@ -1,5 +1,5 @@
-# WorkForce Scheduler Pro
-Application de planification des effectifs avec backend SQLite.
+# PairTâche
+Application de matching des taches et de stagaires avec backend 🐍 Flask-SQLite et frontent en pure 🤘🏻JS.
 
 ## Fonctionnalités
 
