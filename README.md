@@ -10,7 +10,7 @@ Application de planification des effectifs avec backend SQLite.
 - Vue globale du planning
 - Gestion des responsables
 
-### Chefs d’équipe
+### Responsable des tâches
 - Connexion par nom uniquement
 - Consultation et filtrage des employés disponibles
 - Proposition des tâches.
@@ -36,7 +36,8 @@ pip install -r requirements.txt
 ```
 ## TO DO
 - [ ] Finish the translation of the entire application. I did it in english.
-- [ ] Unit test.
+- [ ] Unit tests.
+- [ ] Add a filter feature by availability.
 - [ ] Add the phone number feature in the database and to the GET queries in the BE.
 - [ ] Change the matching algorithm (so rustic at date).
 - [ ] Decide if the complecity is enough at the current state... (More robust DB, a framework for the front ?)
