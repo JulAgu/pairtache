@@ -23,6 +23,7 @@ def init_db():
             name TEXT NOT NULL,
             department TEXT,
             skills TEXT,
+            phone_number TEXT,
             email TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -131,9 +132,9 @@ def create_worker():
     
     skills_str = ','.join(data.get('skills', []))
     cursor.execute('''
-        INSERT INTO workers (name, department, skills, email)
-        VALUES (?, ?, ?, ?)
-    ''', (data['name'], data.get('department', ''), skills_str, data.get('email', '')))
+        INSERT INTO workers (name, department, skills, phone_number, email)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (data['name'], data.get('department', ''), skills_str, data.get('phoneNumber'), data.get('email', '')))
     
     worker_id = cursor.lastrowid
     conn.commit()
@@ -148,7 +149,7 @@ def delete_worker(worker_id):
     cursor = conn.cursor()
     
     # Delete associated availability slots first
-    cursor.execute('DELETE FROM availability_slots WHERE worker_id = ?', (worker_id,))
+    cursor.execute('DELETE FROM availability_periods WHERE worker_id = ?', (worker_id,))
     cursor.execute('DELETE FROM workers WHERE id = ?', (worker_id,))
     
     conn.commit()
@@ -507,5 +508,5 @@ if __name__ == '__main__':
     print("=" * 50)
     
     # Run the Flask app
-    app.run(host='0.0.0.0', port=8050, debug=False)
-    # app.run(debug=False
+    app.run(host='127.0.0.1', port=8020, debug=False)
+    # app.run(debug=False)

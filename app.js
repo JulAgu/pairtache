@@ -247,17 +247,18 @@ async function addWorker() {
     const name = document.getElementById('workerName').value.trim();
     const department = document.getElementById('workerDepartment').value.trim();
     const skillsInput = document.getElementById('workerSkills').value.trim();
+    const phoneNumber = document.getElementById('workerTelephone').value.trim();
     const email = document.getElementById('workerEmail').value.trim();
 
     if (!name || !department) {
-        alert('Please fill in all required fields');
+        alert('Veuillez remplir tous les champs requis (*)');
         return;
     }
 
     const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
 
     try {
-        await apiRequest('/workers', 'POST', { name, department, skills, email });
+        await apiRequest('/workers', 'POST', { name, department, skills, phoneNumber, email });
         await loadAllData();
         closeModal('addWorkerModal');
         renderWorkers();
@@ -267,6 +268,7 @@ async function addWorker() {
         document.getElementById('workerName').value = '';
         document.getElementById('workerDepartment').value = '';
         document.getElementById('workerSkills').value = '';
+        document.getElementById('workerTelephone').value = '';
         document.getElementById('workerEmail').value = '';
     } catch (error) {
         alert('Failed to add worker');
@@ -300,7 +302,7 @@ async function addAvailability() {
     const endDate = document.getElementById('availabilityEndDate').value;
 
     if (!startDate || !endDate) {
-        alert('Please fill in all fields');
+        alert('Veuillez saisir un début et une fin de période');
         return;
     }
 
@@ -353,7 +355,7 @@ async function proposeTask() {
     const endDate = document.getElementById('taskEndDate').value;
 
     if (!title || !startDate || !endDate) {
-        alert('Please fill in all required fields');
+        alert('Veuillez remplir tous les champs requis (*)');
         return;
     }
 
@@ -489,7 +491,7 @@ async function addChief() {
     const email = document.getElementById('chiefEmail').value.trim();
 
     if (!name) {
-        alert('Please enter chief name');
+        alert('Veuillez saisir au moins le Nom Prénom du responsable');
         return;
     }
 
@@ -608,7 +610,8 @@ function renderWorkers(workersToRender = workers) {
                 <div class="worker-header">
                     <div>
                         <div class="worker-name">${worker.name}</div>
-                        <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">${worker.department}</div>
+                        <div style="font-size: 13px; font-style: italic; color: #6b7280; margin-top: 4px;">${worker.department}</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">${worker.phone_number}</div>
                     </div>
                     ${currentUserType === 'admin' ? `
                         <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Supprimer</button>
@@ -685,7 +688,7 @@ function renderScheduleOverview() {
     if (taskAssignments.length === 0) {
         table.innerHTML = `
             <tr><td colspan="7" style="text-align: center; padding: 40px;">
-                No assignments yet. Propose tasks and run the matching algorithm.
+                Aucune assignation actuellement. Proposer des tâches et lancez le système de correspondance.
             </td></tr>
         `;
         return;
@@ -699,25 +702,26 @@ function renderScheduleOverview() {
         <thead>
             <tr>
                 <th>Tâche</th>
+                <th>Responsable</th>
                 <th>Alternant</th>
                 <th>Date début</th>
                 <th>Date fin</th>
-                <th>Durée</th>
-                <th>Score de correspondance</th>
+                <th>Numéro téléphone</th>
                 <th>Statut</th>
             </tr>
         </thead>
         <tbody>
             ${sortedAssignments.map(assignment => {
-                const days = calculateDaysBetween(assignment.start_date, assignment.end_date) + 1;
+                const worker = workers.find(w => w.id === assignment.worker_id);
+                const chief = chiefs.find(c => c.id === assignment.chief_id);
                 return `
                     <tr>
                         <td>${assignment.title}</td>
+                        <td>${assignment.chief_name}</td>
                         <td>${assignment.worker_name}</td>
                         <td>${assignment.start_date}</td>
                         <td>${assignment.end_date}</td>
-                        <td>${days} days</td>
-                        <td>${assignment.match_score ? assignment.match_score.toFixed(1) + '%' : 'N/A'}</td>
+                        <td>${assignment.phone_number}</td>
                         <td>
                             <span class="status-badge status-claimed">
                                 ${assignment.status}
@@ -737,8 +741,8 @@ function renderChiefs() {
         grid.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">👔</div>
-                <h3>No chiefs found</h3>
-                <p>Add chiefs to manage teams</p>
+                <h3>Aucun responsable trouvé</h3>
+                <p>Ajouter des responsables pour la gestion des tâches</p>
             </div>
         `;
         return;
@@ -776,8 +780,8 @@ function renderProposedTasks() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📋</div>
-                <h3>No tasks proposed yet</h3>
-                <p>Propose tasks to be matched with workers</p>
+                <h3>Aucune tâche proposée actuellement</h3>
+                <p>Proposer des tâches à attribuer aux travailleurs</p>
             </div>
         `;
         return;
@@ -922,8 +926,8 @@ function renderMatchingView() {
             ${taskAssignments.length === 0 ? `
                 <div class="empty-state">
                     <div class="empty-state-icon">🤖</div>
-                    <h3>No confirmed assignments yet</h3>
-                    <p>Run the matching algorithm and confirm proposed matches</p>
+                    <h3>Aucune tâche assignée actuellement</h3>
+                    <p>Utiliser le système de correspondance pour vous aider</p>
                 </div>
             ` : `
                 <div>
