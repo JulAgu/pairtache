@@ -592,8 +592,8 @@ function renderWorkers(workersToRender = workers) {
         grid.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">👥</div>
-                <h3>No workers found</h3>
-                <p>Add workers to get started</p>
+                <h3>Aucun alternant</h3>
+                <p>Ajouter un alternant pour commencer</p>
             </div>
         `;
         return;
