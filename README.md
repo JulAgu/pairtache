@@ -37,11 +37,14 @@ pip install -r requirements.txt
 ## TO DO
 - [ ] Finish the translation of the entire application. I did it in english.
 - [ ] Unit tests.
-- [ ] Add a filter feature by availability.
-- [ ] Add the phone number feature in the database and to the GET queries in the BE.
+- [ ] Add a filter by availability (init_day -> last_day) and remove the filter by availability status.
+- [ ] Add a phone number feature in the database and to the GET query in the back-end.
 - [ ] Change the matching algorithm (so rustic at date).
-- [ ] Decide if the complecity is enough at the current state... (More robust DB, a framework for the front ?)
-- [ ] Change the schedule overview (eliminating days and correpsondance score). Add the phone number
-- [ ] Do some deployment test wit real users (Flask shoul be solid fr multiple users, but I don't know if it is enough).
-- [ ] There is a bug when the Matching algo is executed : "No matches found. Make sure workers have availability and tasks have requirements set." This happens even after a succesful assignation.
-- [ ] After asignation. GET the assignation data inmediatly to avoid display errors.
+- [ ] Decide if the complexity is enough at the current state... (More robust DB, a framework for the front ?)
+- [ ] Change the schedule overview (eliminating days and correspondance score). Add the phone number.
+- [ ] Modify the loginAdmin() function so that the login is not exposed in the *js* (DB or secrets.yaml)
+- [ ] Setting up event handlers instead of use event.
+- [ ] Do some deployment test with real users (Flask should be solid enough for multiple users but I'm not completly sure).
+- [ ] Add a feature to view the interns' profiles after creation; modify them should be an option ?
+- [ ] (optional) In the matching screen: Add a perfect match indicator when all the task skills are in the stagiaire profile.
+

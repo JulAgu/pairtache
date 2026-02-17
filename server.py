@@ -428,20 +428,18 @@ def match_tasks():
         
         for worker in workers_data:
             worker_skills = set(worker['skills'].split(',')) if worker['skills'] else set()
-            
-            # Calculate match score
             score = 0
             
-            # Skill match (40 points)
+            # Skill match (30 points)
             if task_skills:
                 skill_match = len(task_skills & worker_skills) / len(task_skills)
-                score += skill_match * 40
+                score += skill_match * 30
             
             # Department match (30 points)
             if task['required_department'] and worker['department'] == task['required_department']:
                 score += 30
             
-            # Availability match (30 points)
+            # Availability match (40 points)
             worker_availability = [a for a in availability_data if a['worker_id'] == worker['id']]
             has_availability = False
             if worker_availability:
@@ -455,13 +453,12 @@ def match_tasks():
                                 if not (task['end_date'] < assignment['start_date'] or task['start_date'] > assignment['end_date']):
                                     is_available = False
                                     break
-                        
                         if is_available:
-                            score += 30
+                            score += 40
                             has_availability = True
                         break
             
-            if score > 0:  # Include all potential matches
+            if has_availability:  # Include all potential matches
                 candidates.append({
                     'task_id': task['id'],
                     'task_title': task['title'],
@@ -510,5 +507,5 @@ if __name__ == '__main__':
     print("=" * 50)
     
     # Run the Flask app
-    # app.run(host='0.0.0.0', port=5000, debug=True)
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8050, debug=False)
+    # app.run(debug=False

@@ -53,10 +53,10 @@ function updateConnectionStatus(connected) {
     
     if (connected) {
         statusEl.className = 'connection-status connected';
-        statusText.textContent = '🟢 Connected';
+        statusText.textContent = '🟢 Connecté';
     } else {
         statusEl.className = 'connection-status disconnected';
-        statusText.textContent = '🔴 Disconnected';
+        statusText.textContent = '🔴 Déconnecté';
     }
 }
 
@@ -274,7 +274,7 @@ async function addWorker() {
 }
 
 async function deleteWorker(workerId) {
-    if (confirm('Are you sure you want to delete this worker?')) {
+    if (confirm('Etes vous sûr de vouloir supprimer cet alternant ?')) {
         try {
             await apiRequest(`/workers/${workerId}`, 'DELETE');
             await loadAllData();
@@ -324,7 +324,7 @@ async function addAvailability() {
 }
 
 async function deleteAvailabilityPeriod(periodId) {
-    if (confirm('Are you sure you want to delete this availability period?')) {
+    if (confirm('Etes vous sûr de vouloir supprimer cette période de disponibilité ?')) {
         try {
             await apiRequest(`/availability/${periodId}`, 'DELETE');
             await loadAllData();
@@ -391,7 +391,7 @@ async function proposeTask() {
 }
 
 async function deleteTask(taskId) {
-    if (confirm('Are you sure you want to delete this task?')) {
+    if (confirm('Etes vous sûr de vouloir supprimer cette tâche ?')) {
         try {
             await apiRequest(`/tasks/${taskId}`, 'DELETE');
             await loadAllData();
@@ -509,7 +509,7 @@ async function addChief() {
 }
 
 async function deleteChief(chiefId) {
-    if (confirm('Are you sure you want to delete this chief?')) {
+    if (confirm('Etes vous sûr de vouloir supprimer ce responsable ?')) {
         try {
             await apiRequest(`/chiefs/${chiefId}`, 'DELETE');
             await loadAllData();
@@ -611,7 +611,7 @@ function renderWorkers(workersToRender = workers) {
                         <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">${worker.department}</div>
                     </div>
                     ${currentUserType === 'admin' ? `
-                        <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Delete</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Supprimer</button>
                     ` : ''}
                 </div>
                 
@@ -624,16 +624,16 @@ function renderWorkers(workersToRender = workers) {
                 <div class="availability-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <div class="availability-title">
-                            Availability Periods (${workerPeriods.length})
+                            Période(s) de présence(s) (${workerPeriods.length})
                         </div>
                         ${currentUserType === 'admin' ? `
-                            <button class="btn btn-secondary btn-small" onclick="openAddAvailabilityModal(${worker.id})">+ Add Period</button>
+                            <button class="btn btn-secondary btn-small" onclick="openAddAvailabilityModal(${worker.id})">+ Ajout période</button>
                         ` : ''}
                     </div>
                     
                     ${workerPeriods.length === 0 ? `
                         <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 13px;">
-                            No availability periods
+                            Aucune période de disponibilité
                         </div>
                     ` : `
                         <div class="time-slots">
@@ -647,7 +647,7 @@ function renderWorkers(workersToRender = workers) {
                                     </div>
                                     <div class="time-actions">
                                         ${currentUserType === 'admin' ? `
-                                            <button class="btn btn-danger btn-small" onclick="deleteAvailabilityPeriod(${period.id})">Delete</button>
+                                            <button class="btn btn-danger btn-small" onclick="deleteAvailabilityPeriod(${period.id})">Supprimer</button>
                                         ` : ''}
                                     </div>
                                 </div>
@@ -658,7 +658,7 @@ function renderWorkers(workersToRender = workers) {
 
                 ${workerAssignments.length > 0 ? `
                     <div class="availability-section" style="margin-top: 15px;">
-                        <div class="availability-title">Assigned Tasks (${workerAssignments.length})</div>
+                        <div class="availability-title">Tâche(s) assignée(s) (${workerAssignments.length})</div>
                         <div class="time-slots">
                             ${workerAssignments.map(assignment => `
                                 <div class="time-slot claimed">
@@ -698,13 +698,13 @@ function renderScheduleOverview() {
     table.innerHTML = `
         <thead>
             <tr>
-                <th>Task</th>
-                <th>Worker</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Days</th>
-                <th>Match Score</th>
-                <th>Status</th>
+                <th>Tâche</th>
+                <th>Alternant</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Durée</th>
+                <th>Score de correspondance</th>
+                <th>Statut</th>
             </tr>
         </thead>
         <tbody>
@@ -754,7 +754,7 @@ function renderChiefs() {
                         <div class="worker-name">${chief.name}</div>
                         <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">${chief.department || 'No department'}</div>
                     </div>
-                    <button class="btn btn-danger btn-small" onclick="deleteChief(${chief.id})">Delete</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteChief(${chief.id})">Supprimer</button>
                 </div>
                 <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
                     <div style="font-weight: 600; color: #374151; margin-bottom: 8px;">
@@ -801,7 +801,7 @@ function renderProposedTasks() {
                         </div>
                     </div>
                     ${(currentUserType === 'admin' || (currentUserType === 'chief' && task.chief_id === currentUser.id)) ? `
-                        <button class="btn btn-danger btn-small" onclick="deleteTask(${task.id})">Delete</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTask(${task.id})">Supprimer</button>
                     ` : ''}
                 </div>
                 
@@ -840,13 +840,13 @@ function renderMatchingView() {
         <div style="margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div>
-                    <h3 style="color: #1f2937; margin-bottom: 5px;">Task Matching System</h3>
+                    <h3 style="color: #1f2937; margin-bottom: 5px;">Système d'analyse de correspondance</h3>
                     <p style="color: #6b7280; font-size: 14px;">
-                        ${pendingTasks.length} pending tasks | ${assignedTasks.length} confirmed assignments
+                        ${pendingTasks.length} tâches en attente | ${assignedTasks.length} mission assignée
                     </p>
                 </div>
                 <button class="btn btn-primary" onclick="runMatchingAlgorithm()">
-                    🤖 Run Matching Algorithm
+                    🤖 Lancer l'analyse de correspondance
                 </button>
             </div>
 
@@ -927,7 +927,7 @@ function renderMatchingView() {
                 </div>
             ` : `
                 <div>
-                    <h4 style="color: #1f2937; margin-bottom: 15px;">✅ Confirmed Assignments</h4>
+                    <h4 style="color: #1f2937; margin-bottom: 15px;">✅ Mission assignée</h4>
                     <div class="workers-grid">
                         ${taskAssignments.map(assignment => {
                             const task = proposedTasks.find(t => t.id === assignment.task_id);

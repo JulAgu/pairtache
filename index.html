@@ -583,10 +583,10 @@
                 <h1>🗓️ PairTâche</h1>
                 <div class="user-info">
                     <div class="connection-status" id="connectionStatus">
-                        <span id="statusText">Connecting...</span>
+                        <span id="statusText">Connexion...</span>
                     </div>
                     <div class="user-badge" id="userBadge"></div>
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                    <button class="btn btn-danger" onclick="logout()">Déconnexion</button>
                 </div>
             </div>
 
@@ -596,7 +596,7 @@
                     <div class="tab active" onclick="switchTab('workers')">Stagiaires</div>
                     <div class="tab" onclick="switchTab('schedule')">Aperçu du planning</div>
                     <div class="tab" onclick="switchTab('proposedTasks')">Tâches proposées</div>
-                    <div class="tab" onclick="switchTab('matching')">Matching</div>
+                    <div class="tab" onclick="switchTab('matching')">Correspondance</div>
                     <div class="tab" onclick="switchTab('chiefs')">Responsables</div>
                 </div>
             </div>
@@ -614,7 +614,7 @@
                 <div id="workersTab" class="tab-content">
                     <div class="action-bar">
                         <div class="search-box">
-                            <input type="text" id="searchWorkers" placeholder="Search workers..." oninput="filterWorkers()">
+                            <input type="text" id="searchWorkers" placeholder="Recherche alternants..." oninput="filterWorkers()">
                             <span class="search-icon">🔍</span>
                         </div>
                         <button class="btn btn-primary" onclick="openAddWorkerModal()" id="addWorkerBtn">+ Ajouter Stagiaire</button>
@@ -719,22 +719,22 @@
     <div id="addAvailabilityModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add Availability Period</h3>
+                <h3>Ajouter période de disponibilitée</h3>
                 <button class="close-btn" onclick="closeModal('addAvailabilityModal')">&times;</button>
             </div>
             <input type="hidden" id="availabilityWorkerId">
             <div class="form-group">
-                <label>Start Date</label>
+                <label>Date de début</label>
                 <input type="date" id="availabilityStartDate">
             </div>
             <div class="form-group">
-                <label>End Date</label>
+                <label>Date de fin</label>
                 <input type="date" id="availabilityEndDate">
             </div>
             <p style="font-size: 13px; color: #6b7280; margin-top: 10px;">
-                📅 Worker will be available for all days in this date range
+                📅 Alternant est disponible tous les jours de la période indiquée
             </p>
-            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="addAvailability()">Add Availability Period</button>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="addAvailability()">Ajouter période de disponibilitée</button>
         </div>
     </div>
 
