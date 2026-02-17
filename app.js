@@ -683,6 +683,7 @@ function renderWorkers(workersToRender = workers) {
 }
 
 function renderScheduleOverview() {
+    debugger;
     const table = document.getElementById('scheduleTable');
     
     if (taskAssignments.length === 0) {
@@ -712,8 +713,6 @@ function renderScheduleOverview() {
         </thead>
         <tbody>
             ${sortedAssignments.map(assignment => {
-                const worker = workers.find(w => w.id === assignment.worker_id);
-                const chief = chiefs.find(c => c.id === assignment.chief_id);
                 return `
                     <tr>
                         <td>${assignment.title}</td>
@@ -721,7 +720,7 @@ function renderScheduleOverview() {
                         <td>${assignment.worker_name}</td>
                         <td>${assignment.start_date}</td>
                         <td>${assignment.end_date}</td>
-                        <td>${assignment.phone_number}</td>
+                        <td>${assignment.worker_phone}</td>
                         <td>
                             <span class="status-badge status-claimed">
                                 ${assignment.status}

@@ -41,7 +41,7 @@ pip install -r requirements.txt
 - [x] Add a phone number feature in the database and to the GET query in the back-end.
 - [ ] Change the matching algorithm (so rustic at date).
 - [ ] Decide if the complexity is enough at the current state... (More robust DB, a framework for the front ?)
-- [ ] Change the schedule overview (eliminating days and correspondance score). Add the phone number.
+- [x] Change the schedule overview (eliminating days and correspondance score). Add the phone number.
 - [ ] Modify the loginAdmin() function so that the login is not exposed in the *js* (DB or secrets.yaml)
 - [ ] Setting up event handlers instead of use event.
 - [ ] Do some deployment test with real users (Flask should be solid enough for multiple users but I'm not completly sure).

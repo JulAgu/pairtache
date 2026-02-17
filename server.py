@@ -314,10 +314,11 @@ def get_assignments():
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT a.*, t.title, t.description, t.priority, w.name as worker_name
+        SELECT a.*, t.title, t.description, t.priority, w.name as worker_name, w.phone_number as worker_phone, ch.name as chief_name
         FROM task_assignments a
         JOIN proposed_tasks t ON a.task_id = t.id
         JOIN workers w ON a.worker_id = w.id
+        JOIN chiefs ch ON t.chief_id = ch.id
         ORDER BY a.start_date
     ''')
     assignments = [dict(row) for row in cursor.fetchall()]
@@ -508,5 +509,6 @@ if __name__ == '__main__':
     print("=" * 50)
     
     # Run the Flask app
-    app.run(host='127.0.0.1', port=8020, debug=False)
+    # app.run(host='127.0.0.1', port=8020, debug=False)
+    app.run(host='0.0.0.0', port=8050, debug=True)
     # app.run(debug=False)
