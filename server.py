@@ -181,7 +181,7 @@ def create_task():
         INSERT INTO proposed_tasks 
         (chief_id, chief_name, title, description, required_skills, required_department, 
          priority, estimated_days, start_date, end_date, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'en attente')
     ''', (data['chief_id'], data['chief_name'], data['title'], data.get('description', ''),
           skills_str, data.get('required_department', ''), data.get('priority', 'medium'),
           data.get('estimated_days', 1), data.get('start_date'), data.get('end_date')))
@@ -251,13 +251,13 @@ def confirm_assignment():
     cursor.execute('''
         INSERT INTO task_assignments 
         (task_id, worker_id, start_date, end_date, match_score, status)
-        VALUES (?, ?, ?, ?, ?, 'assigned')
+        VALUES (?, ?, ?, ?, ?, 'assignée')
     ''', (data['task_id'], data['worker_id'], data['start_date'], 
           data['end_date'], data.get('match_score', 0)))
     
     # Update task status
     cursor.execute('UPDATE proposed_tasks SET status = ?, matched_worker_id = ? WHERE id = ?',
-                  ('assigned', data['worker_id'], data['task_id']))
+                  ('assignée', data['worker_id'], data['task_id']))
     
     assignment_id = cursor.lastrowid
     conn.commit()
@@ -283,7 +283,7 @@ def delete_assignment(assignment_id):
         
         # Reset task to pending
         cursor.execute('UPDATE proposed_tasks SET status = ?, matched_worker_id = NULL WHERE id = ?',
-                      ('pending', task_id))
+                      ('en attente', task_id))
         
         conn.commit()
     
@@ -301,19 +301,19 @@ def create_assignment():
     cursor.execute('''
         INSERT INTO task_assignments 
         (task_id, worker_id, start_date, end_date, match_score, status)
-        VALUES (?, ?, ?, ?, ?, 'assigned')
+        VALUES (?, ?, ?, ?, ?, 'assignée')
     ''', (data['task_id'], data['worker_id'], data['start_date'], 
           data['end_date'], data.get('match_score', 0)))
     
     # Update task status
     cursor.execute('UPDATE proposed_tasks SET status = ?, matched_worker_id = ? WHERE id = ?',
-                  ('assigned', data['worker_id'], data['task_id']))
+                  ('assignée', data['worker_id'], data['task_id']))
     
     assignment_id = cursor.lastrowid
     conn.commit()
     conn.close()
     
-    return jsonify({'id': assignment_id, 'message': 'Task assigned successfully'}), 201
+    return jsonify({'id': assignment_id, 'message': 'Tâche assignée avec succès'}), 201
 
 # Matching algorithm endpoint
 @app.route('/api/match-tasks', methods=['POST'])
@@ -323,7 +323,7 @@ def match_tasks():
     cursor = conn.cursor()
     
     # Get pending tasks
-    cursor.execute("SELECT * FROM proposed_tasks WHERE status = 'pending'")
+    cursor.execute("SELECT * FROM proposed_tasks WHERE status = 'en attente'")
     pending_tasks = [dict(row) for row in cursor.fetchall()]
     
     # Get all workers with their availability
@@ -334,7 +334,7 @@ def match_tasks():
     availability_data = [dict(row) for row in cursor.fetchall()]
     
     # Get existing assignments to avoid double-booking
-    cursor.execute('SELECT * FROM task_assignments WHERE status = "assigned"')
+    cursor.execute('SELECT * FROM task_assignments WHERE status = "assignée"')
     existing_assignments = [dict(row) for row in cursor.fetchall()]
     
     matches = []

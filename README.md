@@ -35,7 +35,7 @@ Application de matching des taches et de stagaires avec backend 🐍 Flask-SQLit
 pip install -r requirements.txt
 ```
 ## TO DO
-- [ ] Finish the translation of the entire application. I did it in english.
+- [x] Finish the translation of the entire application. I did it in english.
 - [ ] Unit tests.
 - [ ] Add a filter by availability (init_day -> last_day) and remove the filter by availability status.
 - [x] Add a phone number feature in the database and to the GET query in the back-end.
@@ -48,3 +48,4 @@ pip install -r requirements.txt
 - [ ] Add a feature to view the interns' profiles after creation; modify them should be an option ?
 - [ ] (optional) In the matching screen: Add a perfect match indicator when all the task skills are in the stagiaire profile.
 - [ ] Link the admin authentication to the config file.
+- [ ] Added control over attendance or assignment periods. It is now possible to create a period that goes back in time.

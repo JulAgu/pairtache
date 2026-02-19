@@ -32,7 +32,7 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
         const response = await fetch(fullUrl, options);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! statut: ${response.status}`);
         }
         
         const result = await response.json();
@@ -135,14 +135,17 @@ function showLoginType(type) {
 function loginAdmin() {
     const username = document.getElementById('adminUsername').value;
     const password = document.getElementById('adminPassword').value;
-
-    if (username === 'admin' && password === 'admin123') {
-        currentUser = { username };
-        currentUserType = 'admin';
-        showMainApp();
-    } else {
-        alert('Invalid credentials!');
-    }
+    // TODO : following block must be activate for deployment
+    // if (username === 'admin' && password === 'admin123') {
+    //     currentUser = { username };
+    //     currentUserType = 'admin';
+    //     showMainApp();
+    // } else {
+    //     alert('Invalid credentials!');
+    // }
+    currentUser = { username };
+    currentUserType = 'admin';
+    showMainApp()
 }
 
 async function loginChief() {
@@ -155,7 +158,7 @@ async function loginChief() {
             currentUserType = 'chief';
             showMainApp();
         } else {
-            alert('Chief not found! Please contact admin.');
+            alert('Responsable non trouvé! Merci de contacter l\'administrateur.');
         }
     } else {
         alert('Please enter your name');
@@ -443,7 +446,7 @@ async function runMatchingAlgorithm() {
 }
 
 async function confirmMatch(taskId, workerId, startDate, endDate, matchScore) {
-    if (!confirm('Confirm this assignment?')) {
+    if (!confirm('Confirmer cette assignation ?')) {
         return;
     }
     
@@ -466,17 +469,17 @@ async function confirmMatch(taskId, workerId, startDate, endDate, matchScore) {
 }
 
 async function cancelAssignment(assignmentId) {
-    if (!confirm('Cancel this assignment? The task will return to pending status.')) {
+    if (!confirm('Etes vous sûr de vouloir annuler cette assignation ? La tâche reviendra au statut "En attente"')) {
         return;
     }
     
     try {
         await apiRequest(`/assignments/${assignmentId}`, 'DELETE');
         await loadAllData();
-        alert('✅ Assignment cancelled!');
+        alert('✅ Assignation annulée!');
         renderMatchingView();
     } catch (error) {
-        alert('Failed to cancel assignment');
+        alert('Erreur dans le retrait de tâche');
     }
 }
 
@@ -645,7 +648,7 @@ function renderWorkers(workersToRender = workers) {
                                 <div class="time-slot">
                                     <div>
                                         <div class="time-info">
-                                            📅 ${formatDateEU(period.start_date)} to ${formatDateEU(period.end_date)}
+                                            📅 du ${formatDateEU(period.start_date)} au ${formatDateEU(period.end_date)}
                                         </div>
                                     </div>
                                     <div class="time-actions">
@@ -668,8 +671,8 @@ function renderWorkers(workersToRender = workers) {
                                     <div>
                                         <div class="time-info">📋 ${assignment.title}</div>
                                         <div class="task-info">
-                                            ${assignment.start_date} to ${assignment.end_date} | 
-                                            Match: ${assignment.match_score ? assignment.match_score.toFixed(1) : 'N/A'}%
+                                            du ${formatDateEU(assignment.start_date)} au ${formatDateEU(assignment.end_date)} | 
+                                            Correspondance: ${assignment.match_score ? assignment.match_score.toFixed(1) : 'N/A'}%
                                         </div>
                                     </div>
                                 </div>
@@ -718,8 +721,8 @@ function renderScheduleOverview() {
                         <td>${assignment.title}</td>
                         <td>${assignment.chief_name}</td>
                         <td>${assignment.worker_name}</td>
-                        <td>${assignment.start_date}</td>
-                        <td>${assignment.end_date}</td>
+                        <td>${formatDateEU(assignment.start_date)}</td>
+                        <td>${formatDateEU(assignment.end_date)}</td>
                         <td>${assignment.worker_phone}</td>
                         <td>
                             <span class="status-badge status-claimed">
@@ -761,10 +764,10 @@ function renderChiefs() {
                 </div>
                 <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
                     <div style="font-weight: 600; color: #374151; margin-bottom: 8px;">
-                        📧 ${chief.email || 'No email'}
+                        📧 ${chief.email || 'Pas de mail'}
                     </div>
                     <div style="font-size: 13px; color: #6b7280;">
-                        📋 ${chiefTasks.length} tasks proposed
+                        📋 ${chiefTasks.length} tâche(s) proposée(s)
                     </div>
                 </div>
             </div>
@@ -792,7 +795,7 @@ function renderProposedTasks() {
 
     container.innerHTML = myTasks.map(task => {
         const worker = task.matched_worker_id ? workers.find(w => w.id === task.matched_worker_id) : null;
-        const statusClass = task.status === 'pending' ? 'status-available' : 'status-claimed';
+        const statusClass = task.status === 'en attente' ? 'status-available' : 'status-claimed';
         
         return `
             <div class="worker-card" style="margin-bottom: 20px;">
@@ -800,7 +803,7 @@ function renderProposedTasks() {
                     <div>
                         <div class="worker-name">${task.title}</div>
                         <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-                            By: ${task.chief_name} | Priority: ${task.priority}
+                            Par: ${task.chief_name} | Importance: ${task.priority}
                         </div>
                     </div>
                     ${(currentUserType === 'admin' || (currentUserType === 'chief' && task.chief_id === currentUser.id)) ? `
@@ -813,7 +816,7 @@ function renderProposedTasks() {
                         ${task.description || 'No description'}
                     </div>
                     <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 12px; color: #6b7280;">
-                        <div>📅 ${task.start_date} to ${task.end_date} (${task.estimated_days} days)</div>
+                        <div>📅 du ${formatDateEU(task.start_date)} au ${formatDateEU(task.end_date)} (${task.estimated_days} jour(s))</div>
                         ${task.required_department ? `<div>🏢 ${task.required_department}</div>` : ''}
                     </div>
                     ${task.required_skills && task.required_skills.length > 0 ? `
@@ -836,8 +839,8 @@ function renderProposedTasks() {
 function renderMatchingView() {
     const container = document.getElementById('matchingContent');
     
-    const pendingTasks = proposedTasks.filter(t => t.status === 'pending');
-    const assignedTasks = proposedTasks.filter(t => t.status === 'assigned');
+    const pendingTasks = proposedTasks.filter(t => t.status === 'en attente');
+    const assignedTasks = proposedTasks.filter(t => t.status === 'assignée');
     
     container.innerHTML = `
         <div style="margin-bottom: 30px;">
@@ -855,7 +858,7 @@ function renderMatchingView() {
 
             ${matchingResults && matchingResults.length > 0 ? `
                 <div style="margin-bottom: 40px;">
-                    <h4 style="color: #1f2937; margin-bottom: 15px;">💡 Proposed Matches (Review & Confirm)</h4>
+                    <h4 style="color: #1f2937; margin-bottom: 15px;">💡 Correspondance(s) proposée(s) (Vérifier et Confirmer)</h4>
                     ${matchingResults.map(match => {
                         const task = match.task;
                         const candidates = match.candidates;
@@ -866,8 +869,8 @@ function renderMatchingView() {
                                     <div class="worker-name" style="margin-bottom: 5px;">📋 ${task.title}</div>
                                     <div style="font-size: 13px; color: #6b7280;">
                                         ${task.description || 'No description'} | 
-                                        ${task.start_date} to ${task.end_date} (${task.estimated_days} days) |
-                                        Priority: ${task.priority}
+                                        du ${formatDateEU(task.start_date)} au ${formatDateEU(task.end_date)} (${task.estimated_days} jour(s)) |
+                                        Importance: ${task.priority}
                                     </div>
                                     ${task.required_skills && task.required_skills.length > 0 ? `
                                         <div class="worker-skills" style="margin-top: 8px;">
@@ -893,12 +896,12 @@ function renderMatchingView() {
                                                     <div style="flex: 1;">
                                                         <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">
                                                             ${index === 0 ? '⭐ ' : ''}${candidate.worker_name}
-                                                            ${index === 0 ? '<span style="color: #10b981; font-size: 12px;"> (Best Match)</span>' : ''}
+                                                            ${index === 0 ? '<span style="color: #10b981; font-size: 12px;"> (Meilleure correspondance)</span>' : ''}
                                                         </div>
                                                         <div style="font-size: 12px; color: #6b7280;">
                                                             ${candidate.worker_department} | 
-                                                            Skills: ${candidate.worker_skills || 'None'} |
-                                                            ${candidate.has_availability ? '✅ Available' : '⚠️ Limited availability'}
+                                                            Compétences: ${candidate.worker_skills || 'None'} |
+                                                            ${candidate.has_availability ? '✅ Disponible' : '⚠️ Disponibilité limitée'}
                                                         </div>
                                                     </div>
                                                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -907,7 +910,7 @@ function renderMatchingView() {
                                                             ${candidate.score.toFixed(1)}%
                                                         </span>
                                                         <button class="btn btn-success btn-small" 
-                                                                onclick="confirmMatch(${task.id}, ${candidate.worker_id}, '${task.start_date}', '${task.end_date}', ${candidate.score})">
+                                                                onclick="confirmMatch(${task.id}, ${candidate.worker_id}, '${formatDateEU(task.start_date)}', '${formatDateEU(task.end_date)}', ${candidate.score})">
                                                             ✓ Confirm
                                                         </button>
                                                     </div>
@@ -953,14 +956,14 @@ function renderMatchingView() {
                                     
                                     <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
                                         <div style="font-size: 13px; color: #374151; margin-bottom: 10px;">
-                                            📅 ${assignment.start_date} to ${assignment.end_date} (${days} days)
+                                            📅 du ${formatDateEU(assignment.start_date)} au ${formatDateEU(assignment.end_date)} (${days} jour(s))
                                         </div>
                                         <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">
-                                            Priority: ${task?.priority || 'N/A'} | 
-                                            Status: ${assignment.status}
+                                            Importance: ${task?.priority || 'N/A'} | 
+                                            Statut: ${assignment.status}
                                         </div>
                                         <button class="btn btn-danger btn-small" onclick="cancelAssignment(${assignment.id})">
-                                            ✕ Cancel Assignment
+                                            ✕ Retirer l'assignation
                                         </button>
                                     </div>
                                 </div>
