@@ -727,16 +727,22 @@
      <div id="editWorkerModal" class="modal">
         <input type="hidden" id="editWorkerId">
 
-        <input id="editWorkerName">
+        <div class="form-group">
+                <label>Nom Alternant *</label>
+                <input type="text" id="editWorkerName">
+            </div>
         <input id="editWorkerDepartment">
         <input id="editWorkerChief">
         <input id="editWorkerSkills">
         <input id="editWorkerTelephone">
         <input id="editWorkerEmail">
+        
 
         <button onclick="updateWorker()">Enregistrer</button>
         <button onclick="closeModal('editWorkerModal')">Annuler</button>
     </div>
+
+            
 
     <!-- Add Availability Modal -->
     <div id="addAvailabilityModal" class="modal">

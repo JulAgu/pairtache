@@ -300,9 +300,9 @@ function openEditWorkerModal(workerId) {
     document.getElementById('editWorkerId').value = worker.id;
     document.getElementById('editWorkerName').value = worker.name;
     document.getElementById('editWorkerDepartment').value = worker.department;
-    document.getElementById('editWorkerChief').value = worker.workerChief;
+    document.getElementById('editWorkerChief').value = worker.worker_chief;
     document.getElementById('editWorkerSkills').value = worker.skills.join(', ');
-    document.getElementById('editWorkerTelephone').value = worker.phoneNumber || '';
+    document.getElementById('editWorkerTelephone').value = worker.phone_number || '';
     document.getElementById('editWorkerEmail').value = worker.email || '';
 
     document.getElementById('editWorkerModal').classList.add('active');
@@ -326,7 +326,7 @@ async function updateWorker() {
     const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
 
     try {
-        await apiRequest(`/workers/${id}`, 'PUT', {
+        await apiRequest(`/workers/${id}`, 'POST', {
             name,
             department,
             workerChief,
@@ -372,7 +372,8 @@ async function addAvailability() {
     try {
         await apiRequest('/availability', 'POST', { workerId, startDate, endDate });
         await loadAllData();
-        closeModal('addAvailabilityModal');
+        // closeModal('addAvailabilityModal');
+        // alert('Période ajoutée avec succès');
         renderWorkers();
 
         // Clear form
@@ -673,7 +674,7 @@ function renderWorkers(workersToRender = workers) {
                         <div style="font-size: 13px; color: #303641; margin-top: 4px;">${worker.worker_chief}</div>  
                     </div>
                     ${currentUserType === 'admin' ? `
-                        <button onclick="openEditWorkerModal('${worker.id}')">Modifier</button>
+                        <button onclick="openEditWorkerModal(${worker.id})">Modifier</button>
                         <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Supprimer</button>
                     ` : ''}
                 </div>
