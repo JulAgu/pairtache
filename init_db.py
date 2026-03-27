@@ -14,6 +14,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             department TEXT,
+            worker_chief TEXT,
             skills TEXT,
             phone_number TEXT,
             email TEXT,

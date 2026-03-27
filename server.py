@@ -48,15 +48,15 @@ def create_worker():
     
     skills_str = ','.join(data.get('skills', []))
     cursor.execute('''
-        INSERT INTO workers (name, department, skills, phone_number, email)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (data['name'], data.get('department', ''), skills_str, data.get('phoneNumber'), data.get('email', '')))
+        INSERT INTO workers (name, department, worker_chief, skills, phone_number, email)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (data['name'], data.get('department', ''), data.get('workerChief', ''), skills_str, data.get('phoneNumber'), data.get('email', '')))
     
     worker_id = cursor.lastrowid
     conn.commit()
     conn.close()
     
-    return jsonify({'id': worker_id, 'message': 'Worker created successfully'}), 201
+    return jsonify({'id': worker_id, 'message': 'Alternant créé avec succès'}), 201
 
 @app.route('/api/workers/<int:worker_id>', methods=['DELETE'])
 def delete_worker(worker_id):
@@ -71,7 +71,7 @@ def delete_worker(worker_id):
     conn.commit()
     conn.close()
     
-    return jsonify({'message': 'Worker deleted successfully'})
+    return jsonify({'message': 'Alternant supprimé avec succès'})
 
 # Chiefs endpoints
 @app.route('/api/chiefs', methods=['GET'])

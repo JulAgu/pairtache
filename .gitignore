@@ -1,3 +1,4 @@
 workforce_scheduler.db
 config.yaml
 __pycache__
+.vscode/

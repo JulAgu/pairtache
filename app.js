@@ -249,11 +249,12 @@ function openAddWorkerModal() {
 async function addWorker() {
     const name = document.getElementById('workerName').value.trim();
     const department = document.getElementById('workerDepartment').value.trim();
+    const workerChief = document.getElementById('workerChief').value.trim();
     const skillsInput = document.getElementById('workerSkills').value.trim();
     const phoneNumber = document.getElementById('workerTelephone').value.trim();
     const email = document.getElementById('workerEmail').value.trim();
 
-    if (!name || !department) {
+    if (!name || !department || !workerChief) {
         alert('Veuillez remplir tous les champs requis (*)');
         return;
     }
@@ -261,7 +262,7 @@ async function addWorker() {
     const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
 
     try {
-        await apiRequest('/workers', 'POST', { name, department, skills, phoneNumber, email });
+        await apiRequest('/workers', 'POST', { name, department, workerChief, skills, phoneNumber, email });
         await loadAllData();
         closeModal('addWorkerModal');
         renderWorkers();
@@ -270,11 +271,12 @@ async function addWorker() {
         // Clear form
         document.getElementById('workerName').value = '';
         document.getElementById('workerDepartment').value = '';
+        document.getElementById('workerChief').value = '';
         document.getElementById('workerSkills').value = '';
         document.getElementById('workerTelephone').value = '';
         document.getElementById('workerEmail').value = '';
     } catch (error) {
-        alert('Failed to add worker');
+        alert('Echec de création de la fiche');
     }
 }
 
@@ -287,6 +289,59 @@ async function deleteWorker(workerId) {
         } catch (error) {
             alert('Failed to delete worker');
         }
+    }
+}
+
+function openEditWorkerModal(workerId) {
+    const worker = workers.find(w => w.id === workerId);
+
+    if (!worker) return;
+
+    document.getElementById('editWorkerId').value = worker.id;
+    document.getElementById('editWorkerName').value = worker.name;
+    document.getElementById('editWorkerDepartment').value = worker.department;
+    document.getElementById('editWorkerChief').value = worker.workerChief;
+    document.getElementById('editWorkerSkills').value = worker.skills.join(', ');
+    document.getElementById('editWorkerTelephone').value = worker.phoneNumber || '';
+    document.getElementById('editWorkerEmail').value = worker.email || '';
+
+    document.getElementById('editWorkerModal').classList.add('active');
+}
+
+async function updateWorker() {
+    const id = document.getElementById('editWorkerId').value;
+
+    const name = document.getElementById('editWorkerName').value.trim();
+    const department = document.getElementById('editWorkerDepartment').value.trim();
+    const workerChief = document.getElementById('editWorkerChief').value.trim();
+    const skillsInput = document.getElementById('editWorkerSkills').value.trim();
+    const phoneNumber = document.getElementById('editWorkerTelephone').value.trim();
+    const email = document.getElementById('editWorkerEmail').value.trim();
+
+    if (!name || !department || !workerChief) {
+        alert('Veuillez remplir tous les champs requis (*)');
+        return;
+    }
+
+    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
+
+    try {
+        await apiRequest(`/workers/${id}`, 'PUT', {
+            name,
+            department,
+            workerChief,
+            skills,
+            phoneNumber,
+            email
+        });
+
+        await loadAllData();
+        closeModal('editWorkerModal');
+        renderWorkers();
+        updateFilterOptions();
+
+    } catch (error) {
+        alert('Echec de modification de la fiche');
     }
 }
 
@@ -615,8 +670,10 @@ function renderWorkers(workersToRender = workers) {
                         <div class="worker-name">${worker.name}</div>
                         <div style="font-size: 13px; font-style: italic; color: #6b7280; margin-top: 4px;">${worker.department}</div>
                         <div style="font-size: 13px; color: #6b7280; margin-top: 2px;">${worker.phone_number}</div>
+                        <div style="font-size: 13px; color: #303641; margin-top: 4px;">${worker.worker_chief}</div>  
                     </div>
                     ${currentUserType === 'admin' ? `
+                        <button onclick="openEditWorkerModal('${worker.id}')">Modifier</button>
                         <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Supprimer</button>
                     ` : ''}
                 </div>
@@ -848,7 +905,7 @@ function renderMatchingView() {
                 <div>
                     <h3 style="color: #1f2937; margin-bottom: 5px;">Système d'analyse de correspondance</h3>
                     <p style="color: #6b7280; font-size: 14px;">
-                        ${pendingTasks.length} tâches en attente | ${assignedTasks.length} mission assignée
+                        ${pendingTasks.length} tâche(s) en attente(s) | ${assignedTasks.length} mission(s) assignée(s)
                     </p>
                 </div>
                 <button class="btn btn-primary" onclick="runMatchingAlgorithm()">
@@ -946,7 +1003,7 @@ function renderMatchingView() {
                                         <div>
                                             <div class="worker-name">${task?.title || 'Unknown Task'}</div>
                                             <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-                                                👤 ${worker?.name || 'Unknown'} | ${worker?.department || 'N/A'}
+                                                👤 ${worker?.name || 'Inconnu'} | ${worker?.department || 'N/A'} | ${worker?.workerchief || 'Inconnu'}
                                             </div>
                                         </div>
                                         <span class="status-badge status-available" style="font-size: 14px;">
