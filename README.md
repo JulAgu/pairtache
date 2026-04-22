@@ -45,7 +45,7 @@ pip install -r requirements.txt
 - [ ] Modify the loginAdmin() function so that the login is not exposed in the *js* (DB or secrets.yaml)
 - [ ] Setting up event handlers instead of use event.
 - [ ] Do some deployment test with real users (Flask should be solid enough for multiple users but I'm not completly sure).
-- [ ] Add a feature to view the interns' profiles after creation; modify them should be an option ?
+- [x] Add a feature to view the interns' profiles after creation; modify them should be an option ?
 - [ ] (optional) In the matching screen: Add a perfect match indicator when all the task skills are in the stagiaire profile.
 - [ ] Link the admin authentication to the config file.
 - [ ] Added control over attendance or assignment periods. It is now possible to create a period that goes back in time.

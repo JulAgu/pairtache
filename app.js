@@ -123,6 +123,41 @@ function calculateDaysBetween(startDate, endDate) {
     return diffDays;
 }
 
+async function loadSuggestions() {
+    try {
+        const [
+            departments,
+            chiefs,
+            skills
+        ] = await Promise.all([
+            apiRequest('/suggestions/chiefs/department'),
+            apiRequest('/suggestions/chiefs/name'),
+            apiRequest('/suggestions/skills')
+        ]);
+ 
+        fillDatalist('departmentSuggestions', departments);
+        fillDatalist('chiefSuggestions', chiefs);
+        fillDatalist('skillsSuggestions', skills);
+ 
+        console.log('💡 Suggestions chargées');
+    } catch (e) {
+        console.warn('⚠️ Impossible de charger les suggestions');
+    }
+}
+ 
+function fillDatalist(id, values) {
+    const datalist = document.getElementById(id);
+    if (!datalist) return;
+ 
+    datalist.innerHTML = '';
+    [...new Set(values)].forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v;
+        datalist.appendChild(opt);
+    });
+}
+
+
 // Login Functions
 function showLoginType(type) {
     document.querySelectorAll('#loginScreen .tab').forEach(tab => tab.classList.remove('active'));
@@ -184,6 +219,7 @@ async function showMainApp() {
 
     // Load all data
     await loadAllData();
+    await loadSuggestions();
 
     if (currentUserType === 'admin') {
         document.getElementById('userBadge').textContent = `Admin: ${currentUser.username}`;
@@ -259,7 +295,7 @@ async function addWorker() {
         return;
     }
 
-    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
+    const skills = [...new Set(skillsInput.split(',').map(s => s.trim()).filter(Boolean))];
 
     try {
         await apiRequest('/workers', 'POST', { name, department, workerChief, skills, phoneNumber, email });
@@ -326,7 +362,7 @@ async function updateWorker() {
     const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()) : [];
 
     try {
-        await apiRequest(`/workers/${id}`, 'POST', {
+        await apiRequest(`/workers/${id}`, 'PUT', {
             name,
             department,
             workerChief,
@@ -581,6 +617,48 @@ async function deleteChief(chiefId) {
     }
 }
 
+function openEditChiefModal(chiefId) {
+    const chief = chiefs.find(c => c.id === chiefId);
+
+    if (!chief) return;
+
+    document.getElementById('editChiefId').value = chief.id;
+    document.getElementById('editChiefName').value = chief.name;
+    document.getElementById('editChiefDepartment').value = chief.department;
+    document.getElementById('editChiefEmail').value = chief.email || '';
+
+    document.getElementById('editChiefModal').classList.add('active');
+}
+
+async function updateChief() {
+    const id = document.getElementById('editChiefId').value;
+
+    const name = document.getElementById('editChiefName').value.trim();
+    const department = document.getElementById('editChiefDepartment').value.trim();
+    const email = document.getElementById('editChiefEmail').value.trim();
+
+    if (!name || !department ) {
+        alert('Veuillez remplir tous les champs requis (*)');
+        return;
+    }
+
+    try {
+        await apiRequest(`/chiefs/${id}`, 'PUT', {
+            name,
+            department,
+            email
+        });
+
+        await loadAllData();
+        closeModal('editChiefModal');
+        renderChiefs();
+        updateFilterOptions();
+
+    } catch (error) {
+        alert('Echec de modification de la fiche');
+    }
+}
+
 // Filtering
 function updateFilterOptions() {
     const skills = new Set();
@@ -674,7 +752,7 @@ function renderWorkers(workersToRender = workers) {
                         <div style="font-size: 13px; color: #303641; margin-top: 4px;">${worker.worker_chief}</div>  
                     </div>
                     ${currentUserType === 'admin' ? `
-                        <button onclick="openEditWorkerModal(${worker.id})">Modifier</button>
+                        <button class="btn btn-secondary btn-small" onclick="openEditWorkerModal(${worker.id})">Modifier</button>
                         <button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">Supprimer</button>
                     ` : ''}
                 </div>
@@ -816,8 +894,9 @@ function renderChiefs() {
                 <div class="worker-header">
                     <div>
                         <div class="worker-name">${chief.name}</div>
-                        <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">${chief.department || 'No department'}</div>
+                        <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">${chief.department || 'Pas de service'}</div>
                     </div>
+                    <button class="btn btn-secondary btn-small" onclick="openEditChiefModal(${chief.id})">Modifier</button>
                     <button class="btn btn-danger btn-small" onclick="deleteChief(${chief.id})">Supprimer</button>
                 </div>
                 <div style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
@@ -1004,7 +1083,7 @@ function renderMatchingView() {
                                         <div>
                                             <div class="worker-name">${task?.title || 'Unknown Task'}</div>
                                             <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">
-                                                👤 ${worker?.name || 'Inconnu'} | ${worker?.department || 'N/A'} | ${worker?.workerchief || 'Inconnu'}
+                                                👤 ${worker?.name || 'Inconnu'} | ${worker?.department || 'N/A'} | ${worker?.worker_chief || 'Inconnu'}
                                             </div>
                                         </div>
                                         <span class="status-badge status-available" style="font-size: 14px;">

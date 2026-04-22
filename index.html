@@ -605,6 +605,7 @@
             <div id="chiefTabs" style="display: none;">
                 <div class="tabs">
                     <div class="tab active" onclick="switchTab('proposedTasks')">Mes Tâches</div>
+                    <div class="tab" onclick="switchTab('schedule')">Aperçu du planning</div>
                     <div class="tab" onclick="switchTab('workers')">Stagiaires disponibles</div>
                 </div>
             </div>
@@ -701,15 +702,18 @@
             </div>
             <div class="form-group">
                 <label>Région ou Service *</label>
-                <input type="text" id="workerDepartment" placeholder="ex., Calvados Ouest, SAPC">
+                <input type="text" id="workerDepartment" list="departmentSuggestions" placeholder="ex., Calvados Ouest, SAPC">
+                <datalist id="departmentSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>Nom Responsable *</label>
-                <input type="text" id="workerChief" placeholder="ex., Pierre-Vincent PROTIN, Mathieu DURIEZ,...">
+                <input type="text" id="workerChief" list="chiefSuggestions" placeholder="ex., Pierre-Vincent PROTIN, Mathieu DURIEZ,...">
+                <datalist id="chiefSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>Compétences (virgule pour séparer)</label>
-                <input type="text" id="workerSkills" placeholder="ex., PowerPoint, Récolte, Traitement,...">
+                <input type="text" id="workerSkills" list="skillsSuggestions" placeholder="ex., PowerPoint, Récolte, Traitement,...">
+                <datalist id="skillsSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>N° téléphone</label>
@@ -725,22 +729,43 @@
 
     <!-- Modify Worker Modal -->
      <div id="editWorkerModal" class="modal">
-        <input type="hidden" id="editWorkerId">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Modifier Alternant</h3>
+                <button class="close-btn" onclick="closeModal('editWorkerModal')">&times;</button>
+            </div>
+            <input type="hidden" id="editWorkerId">
 
-        <div class="form-group">
+            <div class="form-group">
                 <label>Nom Alternant *</label>
                 <input type="text" id="editWorkerName">
             </div>
-        <input id="editWorkerDepartment">
-        <input id="editWorkerChief">
-        <input id="editWorkerSkills">
-        <input id="editWorkerTelephone">
-        <input id="editWorkerEmail">
-        
-
-        <button onclick="updateWorker()">Enregistrer</button>
-        <button onclick="closeModal('editWorkerModal')">Annuler</button>
-    </div>
+            <div class="form-group">
+                <label>Région ou Service</label>
+                <input id="editWorkerDepartment" list="departmentSuggestions">
+                <datalist id="departmentSuggestions"></datalist>
+            </div>
+            <div class="form-group">
+                <label>Nom Responsable</label>
+                <input id="editWorkerChief" list="chiefSuggestions">
+                <datalist id="chiefSuggestions"></datalist>
+            </div>
+            <div class="form-group">
+                <label>Compétences (virgule pour séparer)</label>
+                <input id="editWorkerSkills">
+            </div>
+            <div class="form-group">
+                <label>N° téléphone</label>
+                <input id="editWorkerTelephone">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input id="editWorkerEmail">
+            </div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="updateWorker()">Enregistrer</button>
+            <button style="width: 100%;margin-top: 10px; " onclick="closeModal('editWorkerModal')">Annuler</button>
+        </div>
+     </div>
 
             
 
@@ -784,11 +809,13 @@
             </div>
             <div class="form-group">
                 <label>Compétences demandées (virgule pour séparer)</label>
-                <input type="text" id="taskRequiredSkills" placeholder="ex., Agronomie, PowerPoint,...">
+                <input type="text" id="taskRequiredSkills" list="skillsSuggestions" placeholder="ex., Agronomie, PowerPoint,...">
+                <datalist id="skillsSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>Région ou Service</label>
-                <input type="text" id="taskRequiredDepartment" placeholder="ex., Calvados Ouest, SAPC,...">
+                <input type="text" id="taskRequiredDepartment" list="departmentSuggestions" placeholder="ex., Calvados Ouest, SAPC,...">
+                <datalist id="departmentSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>Importance</label>
@@ -823,13 +850,40 @@
             </div>
             <div class="form-group">
                 <label>Région ou Service</label>
-                <input type="text" id="chiefDepartment" placeholder="ex., Calvados Ouest, SAPC,...">
+                <input type="text" id="chiefDepartment" list="departmentSuggestions" placeholder="ex., Calvados Ouest, SAPC,...">
+                <datalist id="departmentSuggestions"></datalist>
             </div>
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" id="chiefEmail" placeholder="responsable@exaeple.com">
             </div>
             <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="addChief()">Créer Responsable</button>
+        </div>
+    </div>
+    <!-- Modify Chief Modal -->
+    <div id="editChiefModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Modifier responsable</h3>
+                <button class="close-btn" onclick="closeModal('editChiefModal')">&times;</button>
+            </div>
+            <input type="hidden" id="editChiefId">
+
+            <div class="form-group">
+                <label>Nom du responsable</label>
+                <input type="text" id="editChiefName">
+            </div>
+            <div class="form-group">
+                <label>Région ou Service</label>
+                <input id="editChiefDepartment" list="departmentSuggestions">
+                <datalist id="departmentSuggestions"></datalist>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input id="editChiefEmail">
+            </div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="updateChief()">Enregistrer</button>
+            <button style="width: 100%;margin-top: 10px; " onclick="closeModal('editChiefModal')">Annuler</button>
         </div>
     </div>
 

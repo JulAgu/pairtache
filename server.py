@@ -23,6 +23,66 @@ def health_check():
     """Health check endpoint"""
     return jsonify({'status': 'ok', 'message': 'Server is running'})
 
+@app.route('/api/suggestions/<entity>/<field>', methods=['GET'])
+def get_text_suggestions(entity, field):
+    allowed = {
+        "workers": ["department"],
+        "tasks": ["required_department", "priority"],
+        "chiefs": ["department","name"]
+    }
+ 
+    tables = {
+        "workers": "workers",
+        "tasks": "proposed_tasks",
+        "chiefs": "chiefs"
+    }
+ 
+    if entity not in allowed or field not in allowed[entity]:
+        return jsonify([])
+ 
+    conn = get_db()
+    cursor = conn.cursor()
+ 
+    query = f"""
+        SELECT DISTINCT {field}
+        FROM {tables[entity]}
+        WHERE {field} IS NOT NULL AND {field} != ''
+    """
+    cursor.execute(query)
+ 
+    results = [row[0] for row in cursor.fetchall()]
+    conn.close()
+ 
+    return jsonify(results)
+
+
+@app.route('/api/suggestions/skills', methods=['GET'])
+def get_skills_suggestions():
+    conn = get_db()
+    cursor = conn.cursor()
+ 
+    skills_set = set()
+ 
+    # Workers skills
+    cursor.execute("SELECT skills FROM workers WHERE skills IS NOT NULL")
+    for row in cursor.fetchall():
+        for s in row["skills"].split(","):
+            s = s.strip()
+            if s:
+                skills_set.add(s)
+ 
+    # Tasks required_skills
+    cursor.execute("SELECT required_skills FROM proposed_tasks WHERE required_skills IS NOT NULL")
+    for row in cursor.fetchall():
+        for s in row["required_skills"].split(","):
+            s = s.strip()
+            if s:
+                skills_set.add(s)
+ 
+    conn.close()
+    return jsonify(sorted(skills_set))
+
+
 # Workers endpoints
 @app.route('/api/workers', methods=['GET'])
 def get_workers():
@@ -58,6 +118,52 @@ def create_worker():
     
     return jsonify({'id': worker_id, 'message': 'Alternant créé avec succès'}), 201
 
+@app.route('/api/workers/<int:worker_id>', methods=['PUT'])
+def update_worker(worker_id):
+    """Update an existing worker"""
+    data = request.json
+
+    if not data:
+        return jsonify({'error': 'Aucune donnée fournie'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    skills_str = ','.join(data.get('skills', []))
+
+    try:
+        cursor.execute('''
+            UPDATE workers
+            SET name = ?,
+                department = ?,
+                worker_chief = ?,
+                skills = ?,
+                phone_number = ?,
+                email = ?
+            WHERE id = ?
+        ''', (
+            data.get('name'),
+            data.get('department', ''),
+            data.get('workerChief', ''),
+            skills_str,
+            data.get('phoneNumber'),
+            data.get('email', ''),
+            worker_id
+        ))
+
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'Worker non trouvé'}), 404
+
+        conn.commit()
+        return jsonify({'message': 'Alternant mis à jour avec succès'}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        conn.close()
+        
 @app.route('/api/workers/<int:worker_id>', methods=['DELETE'])
 def delete_worker(worker_id):
     """Delete a worker"""
@@ -112,6 +218,46 @@ def delete_chief(chief_id):
     conn.close()
     
     return jsonify({'message': 'Chief deleted successfully'})
+
+@app.route('/api/chiefs/<int:chief_id>', methods=['PUT'])
+def update_chief(chief_id):
+    """Update an existing chief"""
+    data = request.json
+
+    if not data:
+        return jsonify({'error': 'Aucune donnée fournie'}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('''
+            UPDATE chiefs
+            SET name = ?,
+                department = ?,
+                email = ?
+            WHERE id = ?
+        ''', (
+            data.get('name'),
+            data.get('department', ''),
+            data.get('email', ''),
+            chief_id
+        ))
+
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'Responsable non trouvé'}), 404
+
+        conn.commit()
+        return jsonify({'message': 'Responsable mis à jour avec succès'}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        conn.close()
+        
+
 
 # Availability periods endpoints
 @app.route('/api/availability', methods=['GET'])
