@@ -300,6 +300,7 @@ async function addWorker() {
     try {
         await apiRequest('/workers', 'POST', { name, department, workerChief, skills, phoneNumber, email });
         await loadAllData();
+        await loadSuggestions();
         closeModal('addWorkerModal');
         renderWorkers();
         updateFilterOptions();
@@ -372,6 +373,7 @@ async function updateWorker() {
         });
 
         await loadAllData();
+        await loadSuggestions();
         closeModal('editWorkerModal');
         renderWorkers();
         updateFilterOptions();
@@ -401,7 +403,7 @@ async function addAvailability() {
     }
 
     if (new Date(endDate) < new Date(startDate)) {
-        alert('End date must be after start date');
+        alert('Date de fin doit être après la date de début');
         return;
     }
 
@@ -472,6 +474,7 @@ async function proposeTask() {
         });
 
         await loadAllData();
+        await loadSuggestions();
         closeModal('proposeTaskModal');
         renderProposedTasks();
 
@@ -593,6 +596,7 @@ async function addChief() {
     try {
         await apiRequest('/chiefs', 'POST', { name, department, email });
         await loadAllData();
+        await loadSuggestions();
         closeModal('addChiefModal');
         renderChiefs();
 
@@ -610,6 +614,7 @@ async function deleteChief(chiefId) {
         try {
             await apiRequest(`/chiefs/${chiefId}`, 'DELETE');
             await loadAllData();
+            await loadSuggestions();
             renderChiefs();
         } catch (error) {
             alert('Failed to delete chief');
@@ -650,6 +655,7 @@ async function updateChief() {
         });
 
         await loadAllData();
+        await loadSuggestions();
         closeModal('editChiefModal');
         renderChiefs();
         updateFilterOptions();
@@ -1047,7 +1053,7 @@ function renderMatchingView() {
                                                             ${candidate.score.toFixed(1)}%
                                                         </span>
                                                         <button class="btn btn-success btn-small" 
-                                                                onclick="confirmMatch(${task.id}, ${candidate.worker_id}, '${formatDateEU(task.start_date)}', '${formatDateEU(task.end_date)}', ${candidate.score})">
+                                                                onclick="confirmMatch(${task.id}, ${candidate.worker_id}, '${task.start_date}', '${task.end_date}', ${candidate.score})">
                                                             ✓ Confirm
                                                         </button>
                                                     </div>
