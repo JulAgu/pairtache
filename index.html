@@ -636,12 +636,13 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Statut de disponibilité</label>
-                                <select id="availabilityFilter" onchange="filterWorkers()">
-                                    <option value="">Tout</option>
-                                    <option value="available">Disponible</option>
-                                    <option value="fully-claimed">Indisponible</option>
-                                </select>
+                                <label>Date de début souhaitée</label>
+                                <input type="date" id="availabilityStartFilter" onchange="filterWorkers()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Date de fin souhaitée</label>
+                                <input type="date" id="availabilityEndFilter" onchange="filterWorkers()">
                             </div>
                         </div>
                     </div>

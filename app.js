@@ -707,26 +707,52 @@ function filterWorkers() {
     const searchTerm = document.getElementById('searchWorkers').value.toLowerCase();
     const skillFilter = document.getElementById('skillFilter').value;
     const departmentFilter = document.getElementById('departmentFilter').value;
-    const availabilityFilter = document.getElementById('availabilityFilter').value;
 
-    console.log('🔍 Filtering with:', { searchTerm, skillFilter, departmentFilter, availabilityFilter });
+    const filterStart = document.getElementById('availabilityStartFilter')?.value;
+    const filterEnd = document.getElementById('availabilityEndFilter')?.value;
 
-    const filtered = workers.filter(worker => {
+    const filteredWorkers = workers.filter(worker => {
+        // 🔍 Recherche texte
         const matchesSearch = worker.name.toLowerCase().includes(searchTerm);
-        const matchesSkill = !skillFilter || (worker.skills && worker.skills.includes(skillFilter));
-        const matchesDepartment = !departmentFilter || worker.department === departmentFilter;
-        
+
+        // 🎯 Compétences
+        const matchesSkill =
+            !skillFilter || (worker.skills && worker.skills.includes(skillFilter));
+
+        // 🏢 Département
+        const matchesDepartment =
+            !departmentFilter || worker.department === departmentFilter;
+
+        // 📅 Disponibilité par période
         let matchesAvailability = true;
-        if (availabilityFilter === 'available') {
-            const workerPeriods = availabilityPeriods.filter(p => p.worker_id === worker.id);
-            matchesAvailability = workerPeriods.length > 0;
+
+        if (filterStart && filterEnd) {
+            const start = new Date(filterStart);
+            const end = new Date(filterEnd);
+
+            const workerPeriods = availabilityPeriods.filter(
+                p => p.worker_id === worker.id
+            );
+
+            matchesAvailability = workerPeriods.some(period => {
+                const periodStart = new Date(period.start_date);
+                const periodEnd = new Date(period.end_date);
+
+                // 📌 Règle métier claire :
+                // la période doit couvrir ENTIEREMENT la demande
+                return periodStart <= start && periodEnd >= end;
+            });
         }
 
-        return matchesSearch && matchesSkill && matchesDepartment && matchesAvailability;
+        return (
+            matchesSearch &&
+            matchesSkill &&
+            matchesDepartment &&
+            matchesAvailability
+        );
     });
 
-    console.log(`🔍 Filtered: ${filtered.length} of ${workers.length} workers`);
-    renderWorkers(filtered);
+    renderWorkers(filteredWorkers);
 }
 
 // Rendering Functions

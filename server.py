@@ -508,7 +508,7 @@ def match_tasks():
             has_availability = False
             if worker_availability:
                 for avail in worker_availability:
-                    if task['start_date'] >= avail['start_date'] and task['end_date'] <= avail['end_date']:
+                    if task['start_date'] <= avail['end_date'] and task['end_date'] >= avail['start_date']:
                         # Check if worker is not already assigned during this period
                         is_available = True
                         for assignment in existing_assignments:
@@ -537,11 +537,11 @@ def match_tasks():
         # Sort candidates by score
         candidates.sort(key=lambda x: x['score'], reverse=True)
         
-        # Take top 3 candidates for each task
+        # Take top 10 candidates for each task
         if candidates:
             matches.append({
                 'task': task,
-                'candidates': candidates[:3]  # Top 3 matches
+                'candidates': candidates[:10]  # Top 10 matches
             })
     
     conn.close()
