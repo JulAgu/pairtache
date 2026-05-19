@@ -226,12 +226,14 @@ async function showMainApp() {
         document.getElementById('adminTabs').style.display = 'block';
         document.getElementById('chiefTabs').style.display = 'none';
         document.getElementById('addWorkerBtn').style.display = 'block';
+        document.getElementById('proposeTaskBtn').style.display = 'none';
         switchTab('workers');
     } else {
         document.getElementById('userBadge').textContent = `Responsable: ${currentUser.name}`;
         document.getElementById('adminTabs').style.display = 'none';
         document.getElementById('chiefTabs').style.display = 'block';
         document.getElementById('addWorkerBtn').style.display = 'none';
+        document.getElementById('proposeTaskBtn').style.display = 'block';
         switchTab('proposedTasks');
     }
 
